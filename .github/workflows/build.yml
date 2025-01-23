@@ -227,16 +227,6 @@ jobs:
 
           cat arch/${{ env.arch }}/configs/${{ env.DEFCONFIG_NAME }}
 
-          SUSFS_BRANCH=kernel-4.14
-
-          git clone --recursive -j $(nproc) --branch $SUSFS_BRANCH https://github.com/cvnertnc/susfs4ksu-begonia SUSFS2
-
-          SUSFS_REF=$(git -C SUSFS2 rev-parse --short HEAD)
-          echo -e "SUSFS_REF=$SUSFS_REF" >> $GITHUB_OUTPUT
-          echo -e "SUSFS_BRANCH=$SUSFS_BRANCH" >> $GITHUB_OUTPUT
-
-          patch -p1 < SUSFS2/kernel_patches/0001-fs-implement-KernelSU.patch
-
       - name: "🥷 Add SUSFS patches"
         id: add-susfs-patches
         working-directory: ${{ env.KERNEL_NAME }}
@@ -249,16 +239,16 @@ jobs:
             rm -rf "./SUSFS"
           fi
 
-          SUSFS_BRANCH=kernel-4.19
+          SUSFS_BRANCH=kernel-4.14
 
-          git clone --recursive -j $(nproc) --branch $SUSFS_BRANCH https://gitlab.com/simonpunk/susfs4ksu SUSFS
+          git clone --recursive -j $(nproc) --branch $SUSFS_BRANCH https://github.com/cvnertnc/susfs4ksu-begonia SUSFS
 
           SUSFS_REF=$(git -C SUSFS rev-parse --short HEAD)
           echo -e "SUSFS_REF=$SUSFS_REF" >> $GITHUB_OUTPUT
           echo -e "SUSFS_BRANCH=$SUSFS_BRANCH" >> $GITHUB_OUTPUT
 
-          patch -d KernelSU -p1 < SUSFS2/kernel_patches/0001-KernelSU-Next-Implement-susfs-v1.5.3-plus-non-gki.patch
-          patch -p1 < SUSFS2/kernel_patches/0002-fs-Implement-susfs-v1.5.3.patch
+          patch -d KernelSU -p1 < SUSFS/kernel_patches/0001-KernelSU-Next-Implement-susfs-v1.5.3-plus-non-gki.patch
+          patch -p1 < SUSFS/kernel_patches/0002-fs-Implement-susfs-v1.5.3.patch
 
           echo -e "CONFIG_KSU_SUSFS=y" >> arch/${{ env.arch }}/configs/${{ env.DEFCONFIG_NAME }}
           echo -e "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> arch/${{ env.arch }}/configs/${{ env.DEFCONFIG_NAME }}
